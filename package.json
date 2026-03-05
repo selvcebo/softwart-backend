@@ -1,0 +1,16 @@
+{
+  "name": "backend-softwart-mvc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+  "create-backend-app": "./bin.js"
+},
+
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
