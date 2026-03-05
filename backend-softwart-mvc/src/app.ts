@@ -4,11 +4,11 @@ dotenv.config();
 import "reflect-metadata";
 import express, { Application } from "express";
 
-import { AppDataSource }              from "./data-source";
-import { runAllSeeds }                from "./seeds";
-import { registerRoutes }             from "./routes";
+import { AppDataSource } from "./data-source";
+import { runAllSeeds } from "./seeds/index";
+import { registerRoutes } from "./routes";
 import { corsMiddleware, notFoundMiddleware, generalLimiter } from "./middlewares";
-import { errorHandler }               from "./errors";   // ← desde errors directamente
+import { errorHandler } from "./errors";
 
 const app: Application = express();
 const PORT = Number(process.env.PORT ?? 3000);
@@ -24,7 +24,7 @@ app.use("/api", generalLimiter);
 registerRoutes(app);
 
 app.use(notFoundMiddleware);
-app.use(errorHandler);   // ← siempre al final
+app.use(errorHandler);
 
 async function bootstrap(): Promise<void> {
   try {
@@ -32,6 +32,7 @@ async function bootstrap(): Promise<void> {
     await AppDataSource.initialize();
     console.log("✅  Base de datos conectada\n");
 
+    // 🌱 Ejecutar seeds
     await runAllSeeds();
 
     app.listen(PORT, () => {

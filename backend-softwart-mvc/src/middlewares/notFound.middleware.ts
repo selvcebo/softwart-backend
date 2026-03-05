@@ -1,7 +1,5 @@
-// src/middlewares/notFound.middleware.ts
+import { RequestHandler } from "express";
 
-import { Request, Response } from "express";
-
-export const notFoundMiddleware = (_req: Request, res: Response): void => {
+export const notFoundMiddleware: RequestHandler = (_req, res) => {
   res.status(404).json({ success: false, message: "Ruta no encontrada" });
 };

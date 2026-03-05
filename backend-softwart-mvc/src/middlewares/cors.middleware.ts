@@ -1,11 +1,12 @@
-// src/middlewares/cors.middleware.ts
+import { RequestHandler } from "express";
 
-import { Request, Response, NextFunction } from "express";
-
-export const corsMiddleware = (_req: Request, res: Response, next: NextFunction): void => {
-  res.setHeader("Access-Control-Allow-Origin",  process.env.CORS_ORIGIN ?? "*");
+export const corsMiddleware: RequestHandler = (req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", process.env.CORS_ORIGIN ?? "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
-  if (_req.method === "OPTIONS") { res.sendStatus(204); return; }
+  if (req.method === "OPTIONS") {
+    res.sendStatus(204);
+    return;
+  }
   next();
 };
