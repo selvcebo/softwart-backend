@@ -7,6 +7,6 @@ import { requirePermission } from '../middlewares/requirePermission.middleware'
 const router = Router()
 
 router.use(verifyToken)
-router.get('/', requirePermission('PANEL.ACCESO'), getDashboard)
+router.get('/', requirePermission('DASHBOARD.VER'), getDashboard)
 
 export { router as dashboardRouter }

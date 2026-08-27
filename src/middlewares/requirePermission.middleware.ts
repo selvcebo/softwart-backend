@@ -18,6 +18,7 @@ export const requirePermission = (nombrePermiso: string): RequestHandler => {
         .innerJoin("pr.permission", "permiso")
         .where("pr.id_rol = :id_rol", { id_rol })
         .andWhere("permiso.nombre = :nombrePermiso", { nombrePermiso })
+        .andWhere("permiso.estado = :estado", { estado: true })
         .getOne();
 
       if (!tienePermiso) {

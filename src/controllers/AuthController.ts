@@ -63,7 +63,7 @@ export const myPermissions = async (req: Request, res: Response): Promise<void> 
   try {
     const id_rol = req.user?.id_rol;
     const rows: { nombre: string }[] = await AppDataSource.query(
-      `SELECT p.nombre FROM permiso_rol pr INNER JOIN permiso p ON pr.id_permiso = p.id_permiso WHERE pr.id_rol = $1`,
+      `SELECT p.nombre FROM permiso_rol pr INNER JOIN permiso p ON pr.id_permiso = p.id_permiso WHERE pr.id_rol = $1 AND p.estado = true`,
       [id_rol]
     );
     res.json({ success: true, data: rows.map(r => r.nombre) });

@@ -8,6 +8,9 @@ const PERMISOS_BASE = [
   // ── Panel Admin ──────────────────────────────────────────────────────────
   { nombre: "PANEL.ACCESO",             descripcion: "Acceder al panel de administración" },
 
+  // ── Dashboard ────────────────────────────────────────────────────────────
+  { nombre: "DASHBOARD.VER",             descripcion: "Ver métricas y resumen del dashboard" },
+
   // ── Cliente ──────────────────────────────────────────────────────────────
   { nombre: "CUENTA.VER_PERFIL",        descripcion: "Ver perfil del cliente" },
   { nombre: "CUENTA.EDITAR_PERFIL",     descripcion: "Editar perfil del cliente" },

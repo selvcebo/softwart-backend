@@ -16,6 +16,7 @@ let testerToken: string;
 let testerRolId: number;
 let idPermisoClientesVer: number;
 let idPermisoPanelAcceso: number;
+let idPermisoDashboardVer: number;
 
 beforeAll(async () => {
   adminToken = (
@@ -35,6 +36,7 @@ beforeAll(async () => {
   const permisos: { id_permiso: number; nombre: string }[] = permisosRes.body.data;
   idPermisoClientesVer = permisos.find((p) => p.nombre === "CLIENTES.VER")!.id_permiso;
   idPermisoPanelAcceso = permisos.find((p) => p.nombre === "PANEL.ACCESO")!.id_permiso;
+  idPermisoDashboardVer = permisos.find((p) => p.nombre === "DASHBOARD.VER")!.id_permiso;
 
   // Usuario con ese rol, sin cuenta de Cliente asociada (Admin-side).
   const userRes = await request(app)
@@ -76,7 +78,7 @@ describe("requirePermission — control de acceso real por permiso (no por nombr
     expect(res.status).toBe(403);
   });
 
-  it("200 en /api/dashboard en cuanto se le asigna PANEL.ACCESO", async () => {
+  it("403 en /api/dashboard con PANEL.ACCESO pero sin DASHBOARD.VER", async () => {
     const assign = await request(app)
       .post("/api/role-permissions")
       .set("Authorization", `Bearer ${adminToken}`)
@@ -84,7 +86,38 @@ describe("requirePermission — control de acceso real por permiso (no por nombr
     expect(assign.status).toBe(201);
 
     const res = await request(app).get("/api/dashboard").set("Authorization", `Bearer ${testerToken}`);
+    expect(res.status).toBe(403);
+  });
+
+  it("200 en /api/dashboard en cuanto se le asigna DASHBOARD.VER", async () => {
+    const assign = await request(app)
+      .post("/api/role-permissions")
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({ id_rol: testerRolId, id_permiso: idPermisoDashboardVer });
+    expect(assign.status).toBe(201);
+
+    const res = await request(app).get("/api/dashboard").set("Authorization", `Bearer ${testerToken}`);
     expect(res.status).toBe(200);
+  });
+
+  it("403 y no aparece en mis permisos cuando DASHBOARD.VER está inactivo", async () => {
+    const permiso = await request(app)
+      .get(`/api/permissions/${idPermisoDashboardVer}`)
+      .set("Authorization", `Bearer ${adminToken}`);
+    expect(permiso.status).toBe(200);
+
+    const toggle = await request(app)
+      .patch(`/api/permissions/${idPermisoDashboardVer}/estado`)
+      .set("Authorization", `Bearer ${adminToken}`);
+    expect(toggle.status).toBe(200);
+    expect(toggle.body.data.estado).toBe(false);
+
+    const dashboard = await request(app).get("/api/dashboard").set("Authorization", `Bearer ${testerToken}`);
+    expect(dashboard.status).toBe(403);
+
+    const mine = await request(app).get("/api/auth/me/permissions").set("Authorization", `Bearer ${testerToken}`);
+    expect(mine.status).toBe(200);
+    expect(mine.body.data).not.toContain("DASHBOARD.VER");
   });
 
   it("401 sin token de autenticación", async () => {
